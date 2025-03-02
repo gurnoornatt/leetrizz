@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "cd leetrizz && npm install && npm run build",
+  "buildCommand": "cd leetrizz && npm install && npm run vercel-build",
   "outputDirectory": "leetrizz/.next",
   "installCommand": "cd leetrizz && npm install",
   "framework": "nextjs"
