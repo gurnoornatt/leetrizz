@@ -2,13 +2,8 @@
   "name": "leetrizz-root",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "leetrizz"
-  ],
   "scripts": {
-    "dev": "cd leetrizz && npm run dev",
     "build": "cd leetrizz && npm install && npm run build",
-    "start": "cd leetrizz && npm run start",
-    "lint": "cd leetrizz && npm run lint"
+    "start": "cd leetrizz && npm start"
   }
 } 

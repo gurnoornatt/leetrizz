@@ -1,9 +1,7 @@
 // API client for connecting to the serverless API
 
 // Base URL for API calls - will use relative paths in production
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/api' 
-  : 'http://localhost:3000/api';
+const API_BASE_URL = '/api';
 
 // Get leaderboard data
 export async function getLeaderboard() {
