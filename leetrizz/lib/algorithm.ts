@@ -291,28 +291,29 @@ function mapScoreToComplexity(score: number): Complexity {
     const randomValue = Math.random();
     
     if (score < 25) {
-      // Mostly O(no Rizz), but occasionally bump up
-      return randomValue < 0.8 ? "O(no Rizz)" : "O(1)";
+      // Make O(no Rizz) much more common (90% instead of 80%)
+      return randomValue < 0.9 ? "O(no Rizz)" : "O(1)";
     } else {
-      // Scores 25-40: mostly O(1), but can randomly become O(no Rizz) or O(n)
-      if (randomValue < 0.25) {
-        return "O(no Rizz)"; // 25% chance to drop to no Rizz
+      // Scores 25-40: increase chance of O(no Rizz), reduce O(1)
+      if (randomValue < 0.45) {
+        return "O(no Rizz)"; // 45% chance to get no Rizz (up from 25%)
       } else if (randomValue > 0.85) {
-        return "O(n)"; // 15% chance to bump to O(n)
+        return "O(n)"; // 15% chance to bump to O(n) (unchanged)
       } else {
-        return "O(1)"; // 60% chance to stay O(1)
+        return "O(1)"; // 40% chance to stay O(1) (down from 60%)
       }
     }
   }
   
-  // Regular mapping with slightly lower thresholds for higher scores
+  // Regular mapping with adjusted thresholds for higher scores
   if (score < 45) {
     return "O(1)";
   } else if (score < 62) { // Lowered from 65
     return "O(n)";
-  } else if (score < 78) { // Lowered from 82
+  } else if (score < 85) { // Expanded range for O(n log n) from 78 to 85
     return "O(n log n)";
   } else {
+    // Only truly exceptional responses get O(n²) now
     return "O(n²)";
   }
 }
