@@ -285,40 +285,45 @@ function calculateEmojiScore(response: string): number {
  * Map a numerical score to a complexity rating
  */
 function mapScoreToComplexity(score: number): Complexity {
-  // Add randomness for low scores
+  // Very short responses that are not contextually good get the worst rating
+  if (score < 25) {
+    // 90% chance of getting the worst rating
+    return Math.random() < 0.9 ? "O(no Rizz)" : "O(n²)";
+  }
+  
+  // Low scores (25-40) get mostly poor ratings
   if (score < 40) {
-    // For scores below 40, introduce significant randomness
     const randomValue = Math.random();
     
-    if (score < 25) {
-      // Make O(no Rizz) much more common (90% instead of 80%)
-      return randomValue < 0.9 ? "O(no Rizz)" : "O(1)";
+    if (randomValue < 0.45) {
+      return "O(no Rizz)"; // 45% chance
+    } else if (randomValue < 0.85) {
+      return "O(n²)"; // 40% chance 
     } else {
-      // Scores 25-40: increase chance of O(no Rizz), reduce O(1)
-      if (randomValue < 0.45) {
-        return "O(no Rizz)"; // 45% chance to get no Rizz (up from 25%)
-      } else if (randomValue > 0.85) {
-        return "O(n)"; // 15% chance to bump to O(n) (unchanged)
-      } else {
-        return "O(1)"; // 40% chance to stay O(1) (down from 60%)
-      }
+      return "O(n log n)"; // 15% chance
     }
   }
   
-  // Regular mapping with adjusted thresholds for higher scores
+  // Regular mapping with adjusted thresholds
   if (score < 45) {
-    return "O(1)";
-  } else if (score < 62) { // Lowered from 65
-    return "O(n)";
-  } else if (score < 80) { // Reduced the upper range from 85 to 80
-    return "O(n log n)";
+    return "O(n log n)"; // Was O(1)
+  } else if (score < 58) { // Lowered from 62 to make O(log n) easier
+    return "O(n)"; // No change
+  } else if (score < 75) { // Lowered from 80 to make O(1) easier
+    return "O(log n)"; // Was O(n log n)
   } else {
-    // Add some randomness for scores between 80-85
-    if (score < 82 && Math.random() < 0.4) {
-      return "O(n log n)"; // 40% chance to still get O(n log n) if at the borderline
+    // Add more chances for high scores
+    if (score < 78 && Math.random() < 0.3) {
+      return "O(log n)"; // 30% chance to get O(log n) if at the borderline
     }
-    // Otherwise get O(n²)
-    return "O(n²)";
+    
+    // Add chance for O(1) for good but not perfect scores
+    if (score >= 72 && score < 75 && Math.random() < 0.25) {
+      return "O(1)"; // 25% chance to get O(1) even for scores 72-75
+    }
+    
+    // Best scores get the fastest algorithm
+    return "O(1)"; // Was O(n²)
   }
 }
 
@@ -333,25 +338,35 @@ function generateFeedback(scores: ScoreBreakdown, complexity: Complexity): strin
     tone: scores.toneScore,
     originality: scores.originalityScore,
     length: scores.lengthScore,
-    emoji: scores.emojiScore
+    emoji: scores.emojiScore,
+    vibe: scores.vibeScore
   }).reduce((min, current) => current[1] < min[1] ? current : min, ["", 100]);
 
-  // General feedback based on overall score
+  // General feedback based on complexity (now reversed)
   let feedback = "";
-  if (scores.totalScore < 30) {
-    feedback = "Bruh, put some effort in 💀";
-  } else if (scores.totalScore < 50) {
-    feedback = "Mid rizz, you can do better";
-  } else if (scores.totalScore < 70) {
-    feedback = "Not bad, they might respond";
-  } else if (scores.totalScore < 85) {
-    feedback = "You just saved the vibe 👑";
-  } else {
-    feedback = "Elite rizz game! Perfect response";
+  switch(complexity) {
+    case "O(1)":
+      feedback = "Elite rizz game! Perfect response";
+      break;
+    case "O(log n)":
+      feedback = "You just saved the vibe 👑";
+      break;
+    case "O(n)":
+      feedback = "Not bad, they might respond";
+      break;
+    case "O(n log n)":
+      feedback = "Mid rizz, you can do better";
+      break;
+    case "O(n²)":
+      feedback = "Weak response, try harder";
+      break;
+    case "O(no Rizz)":
+      feedback = "Bruh, put some effort in 💀";
+      break;
   }
 
   // Add specific advice based on lowest score
-  if (scores.totalScore < 85) { // Only add specific advice if not already perfect
+  if (complexity !== "O(1)" && complexity !== "O(log n)") { // Only add specific advice if not already great
     switch(lowestCategory[0]) {
       case "relevance":
         feedback += " Try addressing what they actually said.";
@@ -376,9 +391,12 @@ function generateFeedback(scores: ScoreBreakdown, complexity: Complexity): strin
           feedback += " Consider adding an emoji or two.";
         }
         break;
+      case "vibe":
+        feedback += " Try to match the vibe of the conversation better.";
+        break;
     }
   }
-
+  
   return feedback;
 }
 
@@ -388,17 +406,26 @@ function generateFeedback(scores: ScoreBreakdown, complexity: Complexity): strin
 function generateEmojis(scores: ScoreBreakdown, complexity: Complexity): string[] {
   const emojis: string[] = [];
   
-  // Add overall rating emoji
-  if (scores.totalScore < 30) {
-    emojis.push("💀");
-  } else if (scores.totalScore < 50) {
-    emojis.push("😐");
-  } else if (scores.totalScore < 70) {
-    emojis.push("👍");
-  } else if (scores.totalScore < 85) {
-    emojis.push("🔥");
-  } else {
-    emojis.push("💯");
+  // Add overall rating emoji based on complexity (now reversed)
+  switch(complexity) {
+    case "O(1)":
+      emojis.push("💯");
+      break;
+    case "O(log n)":
+      emojis.push("🔥");
+      break;
+    case "O(n)":
+      emojis.push("👍");
+      break;
+    case "O(n log n)":
+      emojis.push("😐");
+      break;
+    case "O(n²)":
+      emojis.push("🫤");
+      break;
+    case "O(no Rizz)":
+      emojis.push("💀");
+      break;
   }
   
   // Add specific category emojis based on scores
@@ -408,6 +435,7 @@ function generateEmojis(scores: ScoreBreakdown, complexity: Complexity): string[
   if (scores.toneScore > 80) emojis.push("🎯");
   if (scores.lengthScore < 40) emojis.push("📏");
   if (scores.emojiScore < 60) emojis.push("😊");
+  if (scores.vibeScore > 80) emojis.push("🌊");
   
   // Fill up to 3 emojis if we don't have enough
   while (emojis.length < 3) {
@@ -418,7 +446,7 @@ function generateEmojis(scores: ScoreBreakdown, complexity: Complexity): string[
     }
   }
   
-  return emojis.slice(0, 3); // Return at most 3 emojis
+  return emojis;
 }
 
 /**
