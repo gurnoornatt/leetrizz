@@ -310,10 +310,14 @@ function mapScoreToComplexity(score: number): Complexity {
     return "O(1)";
   } else if (score < 62) { // Lowered from 65
     return "O(n)";
-  } else if (score < 85) { // Expanded range for O(n log n) from 78 to 85
+  } else if (score < 80) { // Reduced the upper range from 85 to 80
     return "O(n log n)";
   } else {
-    // Only truly exceptional responses get O(n²) now
+    // Add some randomness for scores between 80-85
+    if (score < 82 && Math.random() < 0.4) {
+      return "O(n log n)"; // 40% chance to still get O(n log n) if at the borderline
+    }
+    // Otherwise get O(n²)
     return "O(n²)";
   }
 }
