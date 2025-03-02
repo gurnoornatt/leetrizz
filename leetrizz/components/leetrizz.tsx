@@ -29,6 +29,7 @@ interface GradeResult {
 
 // Sample data
 const sampleTexts: TextScenario[] = [
+  // Female scenarios
   {
     id: "1",
     name: "Sara",
@@ -169,6 +170,150 @@ const sampleTexts: TextScenario[] = [
     category: "Just Met",
     message: "I stole your number from the group chat, don't be mad lol",
   },
+  
+  // Male scenarios
+  {
+    id: "41",
+    name: "Ethan",
+    difficulty: "Easy",
+    category: "Just Met",
+    message: "Hey, my friend pointed you out at the party. Thought I'd say hi.",
+  },
+  {
+    id: "42",
+    name: "Noah",
+    difficulty: "Hard",
+    category: "Breakup",
+    message: "I've been thinking about us and I'm not sure this is working anymore.",
+  },
+  {
+    id: "43",
+    name: "Liam",
+    difficulty: "Medium",
+    category: "Situationship",
+    message: "So are we exclusive or are we still seeing other people?",
+  },
+  {
+    id: "44",
+    name: "Mason",
+    difficulty: "Medium",
+    category: "First Date",
+    message: "Last night was fun. We should do it again sometime.",
+  },
+  {
+    id: "45",
+    name: "Jacob",
+    difficulty: "Hard",
+    category: "Caught Cheating",
+    message: "My friend saw you with that guy from your class. What's going on?",
+  },
+  {
+    id: "46",
+    name: "William",
+    difficulty: "Expert",
+    category: "Ghosted",
+    message: "Hey stranger, sorry I've been MIA. Life's been crazy lately.",
+  },
+  {
+    id: "47",
+    name: "James",
+    difficulty: "Easy",
+    category: "Just Met",
+    message: "Got your number from Alex. Hope that's cool?",
+  },
+  {
+    id: "48",
+    name: "Benjamin",
+    difficulty: "Medium",
+    category: "First Date",
+    message: "Any preferences for dinner tomorrow? I know a few good spots.",
+  },
+  {
+    id: "49",
+    name: "Lucas",
+    difficulty: "Hard",
+    category: "Situationship",
+    message: "My boys keep asking about you. What should I tell them?",
+  },
+  {
+    id: "50",
+    name: "Henry",
+    difficulty: "Medium",
+    category: "Just Met",
+    message: "Aren't you the one who always has the fire workout playlists?",
+  },
+  {
+    id: "51",
+    name: "Alexander",
+    difficulty: "Expert",
+    category: "Caught Cheating",
+    message: "I saw you were at that party with your ex. What's that about?",
+  },
+  {
+    id: "52",
+    name: "Daniel",
+    difficulty: "Hard",
+    category: "Ghosted",
+    message: "Thought you fell off the face of the earth. It's been weeks.",
+  },
+  {
+    id: "53",
+    name: "Matthew",
+    difficulty: "Medium",
+    category: "First Date",
+    message: "That place was kinda mid. I know somewhere better for next time.",
+  },
+  {
+    id: "54",
+    name: "Jackson",
+    difficulty: "Easy",
+    category: "Just Met",
+    message: "We matched on Tinder! Your travel pics are dope btw",
+  },
+  {
+    id: "55",
+    name: "Sebastian",
+    difficulty: "Hard",
+    category: "Breakup",
+    message: "I think we need some space... It's not you, just need to focus on myself rn",
+  },
+  {
+    id: "56",
+    name: "Jack",
+    difficulty: "Medium",
+    category: "Situationship",
+    message: "My family keeps asking about you... getting kinda awkward tbh",
+  },
+  {
+    id: "57",
+    name: "Aiden",
+    difficulty: "Expert",
+    category: "Caught Cheating",
+    message: "Someone sent me screenshots of your convo with your ex. Wanna explain?",
+  },
+  {
+    id: "58",
+    name: "Owen",
+    difficulty: "Hard",
+    category: "Ghosted",
+    message: "Thought we had a connection and then you ghosted. What happened?",
+  },
+  {
+    id: "59",
+    name: "Gabriel",
+    difficulty: "Easy",
+    category: "First Date",
+    message: "That movie was actually pretty good. Your choice was solid.",
+  },
+  {
+    id: "60",
+    name: "Carter",
+    difficulty: "Medium",
+    category: "Just Met",
+    message: "Found you through mutual friends. Hope you don't mind me reaching out.",
+  },
+  
+  // Continue with the rest of the original female scenarios
   {
     id: "21",
     name: "Layla",
@@ -331,19 +476,19 @@ const gradeResponse = (response: string, scenario: TextScenario): GradeResult =>
   } else if (length < 60) {
     return {
       complexity: "O(n)",
-      feedback: "Not bad, she might respond",
+      feedback: "Not bad, they might respond",
       emojis: ["👍", "😏", "✨"],
     }
   } else if (length < 100) {
     return {
       complexity: "O(n log n)",
-      feedback: "King, you just saved the vibe 👑",
+      feedback: "You just saved the vibe 👑",
       emojis: ["🔥", "👑", "💯"],
     }
   } else {
     return {
       complexity: "O(n²)",
-      feedback: "Whoa, too much text. Keep it simple king",
+      feedback: "Whoa, too much text. Keep it simple",
       emojis: ["📚", "🧐", "⚠️"],
     }
   }
