@@ -1,4 +1,5 @@
 {
   "version": 2,
+  "buildCommand": "cd leetrizz && npm install && npm run build",
   "outputDirectory": "leetrizz/.next"
 } 
