@@ -18,9 +18,9 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### Backend (Optional)
+### Backend (Optional for Development)
 
-The app includes a Python backend for the leaderboard functionality. To run it:
+The app includes a Python backend for the leaderboard functionality when developing locally. To run it:
 
 1. Install the required Python packages:
 
@@ -37,13 +37,33 @@ python app.py
 
 The backend will run on [http://localhost:5000](http://localhost:5000).
 
-### Running Both Together
+### Running Both Together (Development Only)
 
-For convenience, you can use the provided script to run both the frontend and backend together:
+For convenience, you can use the provided script to run both the frontend and backend together during development:
 
 ```bash
 ./dev.sh
 ```
+
+## Deployment to Vercel
+
+This project is configured for seamless deployment to Vercel. The serverless API routes handle the backend functionality, eliminating the need for a separate Flask server in production.
+
+### Deploying to Vercel
+
+1. Push your code to a GitHub repository
+2. Import your repository in the Vercel dashboard
+3. Vercel will automatically detect the Next.js project and configure the build settings
+4. Click "Deploy" and your app will be live in minutes
+
+### Environment Variables
+
+The following environment variables are used in production:
+
+- `NEXT_PUBLIC_APP_URL`: The URL of your deployed application
+- `NODE_ENV`: Set to "production" for production deployments
+
+These are already configured in the `.env.production` file and will be automatically used by Vercel.
 
 ## Features
 

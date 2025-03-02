@@ -1,6 +1,9 @@
-// API client for connecting to the Python backend
+// API client for connecting to the serverless API
 
-const API_BASE_URL = 'http://localhost:5000/api';
+// Base URL for API calls - will use relative paths in production
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? '/api' 
+  : 'http://localhost:3000/api';
 
 // Get leaderboard data
 export async function getLeaderboard() {
