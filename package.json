@@ -5,5 +5,8 @@
   "scripts": {
     "build": "cd leetrizz && npm install && npm run build",
     "start": "cd leetrizz && npm start"
+  },
+  "dependencies": {
+    "next": "14.2.16"
   }
 } 
