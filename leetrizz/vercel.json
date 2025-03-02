@@ -4,7 +4,7 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "functions": {
-    "api/*.js": {
+    "app/api/**/*.ts": {
       "memory": 1024,
       "maxDuration": 10
     }

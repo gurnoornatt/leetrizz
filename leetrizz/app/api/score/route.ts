@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import { promises as fsPromises } from 'fs';
 
-// File to store leaderboard data
+// In-memory storage for production (Vercel)
+let inMemoryLeaderboard: Leaderboard | null = null;
+
+// File to store leaderboard data (for development)
 const LEADERBOARD_FILE = path.join(process.cwd(), 'leaderboard.json');
 
 // Define types
@@ -44,8 +47,20 @@ function getRank(score: number): Rank {
   }
 }
 
-// Initialize leaderboard if it doesn't exist
+// Get leaderboard data
 async function getLeaderboard(): Promise<Leaderboard> {
+  // For production (Vercel), use in-memory storage
+  if (process.env.NODE_ENV === 'production') {
+    if (!inMemoryLeaderboard) {
+      inMemoryLeaderboard = {
+        global_rankings: [],
+        users: {}
+      };
+    }
+    return inMemoryLeaderboard;
+  }
+  
+  // For development, try to use file storage
   try {
     await fsPromises.access(LEADERBOARD_FILE);
     const data = await fsPromises.readFile(LEADERBOARD_FILE, 'utf8');
@@ -57,14 +72,30 @@ async function getLeaderboard(): Promise<Leaderboard> {
       users: {}
     };
     
-    await fsPromises.writeFile(LEADERBOARD_FILE, JSON.stringify(emptyLeaderboard, null, 2));
+    try {
+      await fsPromises.writeFile(LEADERBOARD_FILE, JSON.stringify(emptyLeaderboard, null, 2));
+    } catch (writeError) {
+      console.error('Error writing leaderboard file:', writeError);
+    }
+    
     return emptyLeaderboard;
   }
 }
 
-// Save leaderboard to file
+// Save leaderboard to file (only in development)
 async function saveLeaderboard(leaderboard: Leaderboard): Promise<void> {
-  await fsPromises.writeFile(LEADERBOARD_FILE, JSON.stringify(leaderboard, null, 2));
+  // In production, just update the in-memory leaderboard
+  if (process.env.NODE_ENV === 'production') {
+    inMemoryLeaderboard = leaderboard;
+    return;
+  }
+  
+  // In development, save to file
+  try {
+    await fsPromises.writeFile(LEADERBOARD_FILE, JSON.stringify(leaderboard, null, 2));
+  } catch (error) {
+    console.error('Error saving leaderboard to file:', error);
+  }
 }
 
 // POST handler for updating score

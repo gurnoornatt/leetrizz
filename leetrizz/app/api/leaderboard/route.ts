@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
 import path from 'path';
 import { promises as fsPromises } from 'fs';
-import { randomUUID } from 'crypto';
 
-// File to store leaderboard data
+// In-memory storage for production (Vercel)
+let inMemoryLeaderboard: Leaderboard | null = null;
+
+// File to store leaderboard data (for development)
 const LEADERBOARD_FILE = path.join(process.cwd(), 'leaderboard.json');
 
 // Define types
@@ -65,39 +66,59 @@ function getRank(score: number): Rank {
   }
 }
 
-// Initialize leaderboard if it doesn't exist
+// Create a new leaderboard with random data
+function createNewLeaderboard(): Leaderboard {
+  // Generate random leaderboard entries
+  const leaderboard: Leaderboard = {
+    "global_rankings": [
+      ...GEN_Z_USERNAMES.slice(0, 10).map(username => ({
+        "name": username,
+        "score": Math.floor(Math.random() * 650) + 50,
+        "last_updated": new Date().toISOString()
+      }))
+    ],
+    "users": {}
+  };
+  
+  // Sort by score
+  leaderboard.global_rankings = leaderboard.global_rankings.sort(
+    (a, b) => b.score - a.score
+  );
+  
+  // Calculate ranks
+  leaderboard.global_rankings.forEach(entry => {
+    entry.rank = getRank(entry.score);
+  });
+  
+  return leaderboard;
+}
+
+// Initialize leaderboard
 async function initLeaderboard(): Promise<Leaderboard> {
+  // For production (Vercel), use in-memory storage
+  if (process.env.NODE_ENV === 'production') {
+    if (!inMemoryLeaderboard) {
+      inMemoryLeaderboard = createNewLeaderboard();
+    }
+    return inMemoryLeaderboard;
+  }
+  
+  // For development, try to use file storage
   try {
     await fsPromises.access(LEADERBOARD_FILE);
     const data = await fsPromises.readFile(LEADERBOARD_FILE, 'utf8');
     return JSON.parse(data) as Leaderboard;
   } catch (error) {
-    // Generate random leaderboard entries
-    const leaderboard: Leaderboard = {
-      "global_rankings": [
-        ...GEN_Z_USERNAMES.slice(0, 10).map(username => ({
-          "name": username,
-          "score": Math.floor(Math.random() * 650) + 50,
-          "last_updated": new Date().toISOString()
-        }))
-      ],
-      "users": {}
-    };
+    const newLeaderboard = createNewLeaderboard();
     
-    // Sort by score
-    leaderboard.global_rankings = leaderboard.global_rankings.sort(
-      (a, b) => b.score - a.score
-    );
+    // Save to file (only in development)
+    try {
+      await fsPromises.writeFile(LEADERBOARD_FILE, JSON.stringify(newLeaderboard, null, 2));
+    } catch (writeError) {
+      console.error('Error writing leaderboard file:', writeError);
+    }
     
-    // Calculate ranks
-    leaderboard.global_rankings.forEach(entry => {
-      entry.rank = getRank(entry.score);
-    });
-    
-    // Save to file
-    await fsPromises.writeFile(LEADERBOARD_FILE, JSON.stringify(leaderboard, null, 2));
-    
-    return leaderboard;
+    return newLeaderboard;
   }
 }
 
